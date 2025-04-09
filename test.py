@@ -1,7 +1,11 @@
 from supabase import create_client, Client
+import json
 
-url: str = "https://xlizrmqypynlvwwfbogr.supabase.co"
-key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsaXpybXF5cHlubHZ3d2Zib2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2MzA0NDcsImV4cCI6MjA1OTIwNjQ0N30.EA6WsCdfbZnb8scxhboXPjmaVh_2HqLHHWdNulwDVjA"
+with open("config.json", "r") as file:
+    config = json.load(file)
+
+url = config["SUPABASE_URL"]
+key = config["SUPABASE_KEY"]
 supabase: Client = create_client(url, key)
 offset = 0
 limit = 1000
