@@ -156,18 +156,12 @@ def main():
     # For each course in the JSON data, update the 'pdf_links' field in Supabase only if the course exists.
     for course, links in pdf_links_import.items():
         if course in existing_courses:
-            print(f"Updating course: {course} with PDF links: {links}")
+            print(f"Updating course: {course} with PDF links")
             response = supabase.table("coursesv2").update({"pdf_links": links}).eq("course_code", course).execute()
             print("Supabase response:", response)
         else:
             print(f"Course code '{course}' not found in Supabase. Skipping update for this course.")
 
-    # Optionally, fetch and print updated data from Supabase for verification.
-    updated_response = supabase.table("coursesv2").select("course_code, pdf_links").execute()
-    if updated_response.data:
-        print("First record in coursesv2 table after update:", updated_response.data[0])
-    else:
-        print("No records found in coursesv2 table.")
 
 if __name__ == '__main__':
     main()
