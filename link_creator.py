@@ -107,7 +107,7 @@ def export_to_json(data, filename="pdf_links_import.json"):
 
 def get_existing_course_codes(supabase: Client):
     """
-    Retrieves all existing course codes from the Supabase 'courses_new' table.
+    Retrieves all existing course codes from the Supabase 'coursesv2' table.
     
     Returns:
         A set of course codes that exist in Supabase.
@@ -116,7 +116,7 @@ def get_existing_course_codes(supabase: Client):
     limit = 1000
     course_codes = set()
     while True:
-        response = supabase.table("courses_new").select("course_code") \
+        response = supabase.table("coursesv2").select("course_code") \
                          .range(offset, offset + limit - 1).execute()
         data = response.data
         if not data:
@@ -157,17 +157,17 @@ def main():
     for course, links in pdf_links_import.items():
         if course in existing_courses:
             print(f"Updating course: {course} with PDF links: {links}")
-            response = supabase.table("courses_new").update({"pdf_links": links}).eq("course_code", course).execute()
+            response = supabase.table("coursesv2").update({"pdf_links": links}).eq("course_code", course).execute()
             print("Supabase response:", response)
         else:
             print(f"Course code '{course}' not found in Supabase. Skipping update for this course.")
 
     # Optionally, fetch and print updated data from Supabase for verification.
-    updated_response = supabase.table("courses_new").select("course_code, pdf_links").execute()
+    updated_response = supabase.table("coursesv2").select("course_code, pdf_links").execute()
     if updated_response.data:
-        print("First record in courses_new table after update:", updated_response.data[0])
+        print("First record in coursesv2 table after update:", updated_response.data[0])
     else:
-        print("No records found in courses_new table.")
+        print("No records found in coursesv2 table.")
 
 if __name__ == '__main__':
     main()
