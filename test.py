@@ -13,7 +13,7 @@ all_data = []
 list_of_course_codes = []
 
 while True:
-    response = supabase.table("courses_new").select("course_code").range(offset, offset + limit - 1).execute()
+    response = supabase.table("coursesv2").select("course_code").range(offset, offset + limit - 1).execute()
     data = response.data
     for row in data:
         course_code = row["course_code"]
