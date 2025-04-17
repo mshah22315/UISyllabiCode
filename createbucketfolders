@@ -1,0 +1,42 @@
+from supabase import create_client, Client
+import json
+import re
+import time
+
+with open("config.json", "r") as file:
+    config = json.load(file)
+
+url = config["SUPABASE_URL"]
+key = config["SUPABASE_KEY"]
+supabase: Client = create_client(url, key)
+
+offset = 0
+limit = 1000
+all_data = []
+list_of_dept_codes = []
+
+while True:
+    response = supabase.table("coursesv2").select("course_code").range(offset, offset + limit - 1).execute()
+    data = response.data
+    for row in data:
+        course_code = row["course_code"]
+        course_code_arr = course_code.split(":")
+        dept_code = course_code_arr[0].strip()
+        if dept_code not in list_of_dept_codes:
+            list_of_dept_codes.append(dept_code)
+    if not data:  # Break when no more rows are returned
+        break
+    all_data.extend(data)
+    offset += limit
+
+print(sorted(list_of_dept_codes))
+
+for code in sorted(list_of_dept_codes):
+    sanitized_code = re.sub(r'[^a-z0-9-_]', '_', code.lower())
+    try:
+        supabase.storage.create_bucket(sanitized_code)
+        print(f"Bucket created for {sanitized_code}")
+    except Exception as e:
+        print(f"Failed to create bucket for {sanitized_code}: {e}")
+    time.sleep(1)  # Add a 1-second delay
+    
